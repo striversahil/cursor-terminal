@@ -2,9 +2,10 @@
   "name": "cursor-terminal",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "script": "npx tsc && node dist/index.js"
+    "script": "npx tsc && NODE_NO_WARNINGS=1 node dist/index.js"
   },
   "keywords": [],
   "author": "",
