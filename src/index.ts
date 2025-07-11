@@ -12,26 +12,55 @@ const genai = new GoogleGenAI({
 })
 
 const systemMessage = `
-You are an Website builder expert. You have to create the frontend of the website by analysing the user Input.
+You are an Website builder expert. You have to create the website by analysing the user Input.
+Note : Website should be completely functional with HTML , CSS, and JavaScript.
         You have access of tool, which can run or execute any shell or terminal command.
+
+        Tone : Friendly, Professional, and Helpful and use emojis to make it more engaging.
         
         Current user operation system is: ${platform()}
         Give command to the user according to its operating system support.
 
-
+If operating system is Linux or MacOS, you can use the following shell commands:
+- YOU MUST use single quotes around 'EOF' to prevent shell expansion of characters like '$'.
+- **Correct Example:**
+  cat << 'EOF' > my-project/index.html
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>My App</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+  </html>
+  EOF
+        
         <-- What is your job -->
         1: Analyse the user query to see what type of website the want to build
         2: Give them command one by one , step by step
-        3: Use available tool executeCommand
+        
+
+        Note : I have created "generated" directory . Always make directory inside generated folder. example : for making a calculator website folder use mkdir "generated/calculator" instead of mkdir "calculator"
+
+        <-- What are different tools you have -->
+        1: Use executeCommand to execute the shell command. The command can be any valid shell command that the user can run in their terminal.
+        2: Use unsplashImage to fetch an image from Unsplash based on the requirement of the project add it in html file. The query can be any string that describes the image you want to fetch, like "nature", "city", "technology", etc.
 
         // Now you can give them command in following below
-        1: First create a folder, Ex: mkdir "calulator"
-        2: Inside the folder, create index.html , Ex: touch "calculator/index.html"
-        3: Then create style.css same as above
-        4: Then create script.js
-        5: Then write a code in html file
 
-        You have to provide the terminal or shell command to user, they will directly execute it
+        0: Check if the user has already created a folder for the website, if not then create a folder for the website.
+        1: First create a folder, Ex: mkdir "generated/calculator"
+        2: Inside the folder, create index.html , style.css , script.js . Ex: touch "generated/calculator/index.html" "generated/calculator/style.css" "generated/calculator/script.js"
+        4: Then write a code in html file , Ex : echo "<!DOCTYPE html> <html> <head> <title>Calculator</title> <link rel='stylesheet' href='style.css'> </head> <body> <h1>Calculator</h1> <script src='script.js'></script> </body> </html>" > "generated/calculator/index.html"
+        5: If required of image in html file use the unsplashImage tool to fetch an image and it at relevant place in the HTML file.
+        6: Then write a code in css file , Ex : echo "body { font-family: Arial, sans-serif; } h1 { color: #333; }" > "generated/calculator/style.css"
+        : Then write a code in js file , Ex : echo "console.log('Calculator loaded');" > "generated/calculator/script.js"
+
+
+    <-- Final Steps -->
+        
+        7: If the user asks for any additional features, you can add them in the respective files. Example : If the user asks for a dark mode feature, you can add a toggle button in the HTML file, write the necessary CSS for dark mode in the CSS file, and write the JavaScript code to toggle dark mode in the JS file.
 
         
 
@@ -39,10 +68,13 @@ You are an Website builder expert. You have to create the frontend of the websit
 const History: { role: string, parts: ({ text: string } | { functionCall: any } | { functionResponse : any})[] }[] = []
 
 
-const welcomeMessage = `Welcome to the Google GenAI Chat Interface! 🤖
-Type 'exit' or 'quit' to end the conversation.
-You can ask me to build a website, write HTML, CSS, or JavaScript code. 🌈
-Type your message below:\n
+const welcomeMessage = `
+Welcome to the Google GenAI Terminal Agent! 🤖👋
+
+You can ask me to build a website by providing the details, and I will guide you through the process step by step.
+Type your query below and I will respond with the necessary commands to execute in your terminal.
+Type "exit" or "quit" to end the conversation.
+................................................................................................................................................................................
 `
 
 // Function to execute shell commands
@@ -77,8 +109,56 @@ const ExecuteCommandDescription = {
 }
 
 
+
+const unsplashImage = async ({ query }: { query: string }) => {
+    try {
+        const response = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}`, {
+            headers: {
+                Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY || ""}`
+            }
+        });
+        const data = await response.json();
+        if (response.ok) {
+            return {
+                status: "success",
+                imageurl : data.results || "",
+            }
+        } else {
+            // console.error("Error fetching image from Unsplash:", data)
+            return {
+                status: "error",
+                message: data.errors ? data.errors.join(", ") : "Failed to fetch image."
+            }
+        }
+    } catch (error) {
+        // console.error("Error fetching image from Unsplash:", error)
+        return {
+            status: "error",
+            message: "Error occurred while fetching image."
+        }
+    }
+}
+
+
+const UnsplashImageDescription = {
+    name: "unsplashImage",
+    description: "Fetches an image from Unsplash based on the provided query.",
+    parameters: {
+        type: "OBJECT",
+        properties: {
+            query: {
+                type: "STRING",
+                description: "The search query for the image. ex: 'nature', 'city', 'technology'."
+            }
+        },
+        required: ["query"]
+    }
+};
+
+
 const AvailableTools : Record<string , any> = {
-    "executeCommand": executeCommand
+    "executeCommand": executeCommand,
+    "unsplashImage": unsplashImage
 }
 
 
@@ -86,14 +166,14 @@ const AvailableTools : Record<string , any> = {
 
 const runAgent = async () => {
     try {
-        console.log("\nGoogle GenAI is thinking...")
+        console.log("\n AI is thinking...⚙️")
         const response = await genai.models.generateContent({
-            model: "gemini-2.0-flash",
+            model: "gemini-2.5-flash",
             contents: History,
             config: {
                 systemInstruction: systemMessage,
                 maxOutputTokens: 1000,
-                tools: [{ functionDeclarations: [ExecuteCommandDescription as any] }],
+                tools: [{ functionDeclarations: [ExecuteCommandDescription as any , UnsplashImageDescription as any] }],
             }
         });
 
@@ -102,6 +182,8 @@ const runAgent = async () => {
             console.log("\nGoogle GenAI Function Call: ", functionCall)
             const tool = functionCall.name ? AvailableTools[functionCall.name] : undefined
             if (tool) {
+
+                // Getting the result of the tool function call with arguments
                 const result = await tool(functionCall.args)
 
                 const toolResult = {
@@ -110,6 +192,7 @@ const runAgent = async () => {
                         result: result
                     }
                 }
+
                 // Push the tool Selection to the history
                 History.push({
                     role: "model",
@@ -142,15 +225,17 @@ console.log(welcomeMessage)
 
 async function main() {
 
-    const message = readline.question("> ").trim()
+    const message = readline.question(">>>  ").trim()
     if (message.toLocaleLowerCase() === "exit" || message.toLocaleLowerCase() === "quit") {
-        console.log("Exiting the conversation. Goodbye! 👋 \n")
-        // sleep for 1 second before exiting
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        console.log(`Thank you for using the Google GenAI Terminal Agent! Goodbye! 👋`)
+        // sleep for 500 milliseconds before exiting
+        await new Promise(resolve => setTimeout(resolve, 500))
         return
     }
 
     try {
+
+        // Push the user message to the history
         History.push({
             role: "user",
             parts: [{ text: message }]
@@ -158,12 +243,13 @@ async function main() {
 
         const response = await runAgent()
 
+        // Putting last response to the history
         History.push({
             role: "model",
             parts: [{ text: response! }]
         })
-        console.log("\nGoogle GenAI Response: \n", response)
-        
+        console.log("[Agent] : ", response)
+        console.log("\n") // Add some space for better readability
 
         main() // Call main again to continue the conversation
     } catch (error) {

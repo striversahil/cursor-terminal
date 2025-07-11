@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes<head>family=Open+Sans:wght@300;400;700<head>display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Punjabi Dhaba - Authentic Indian Cuisine</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Welcome to Punjabi Dhaba! 🍽️</h1>
+      <p>Experience the true taste of Punjab!</p>
+    </header>
+    <main>
+      <section class="hero-section">
+        <img
+          src="https://images.unsplash.com/photo-1731329576495-3cf5f708c8fe?crop=entropy<!-- Image will be inserted here -->cs=srgb<!-- Image will be inserted here -->fm=jpg<!-- Image will be inserted here -->ixid=M3w3NzYyMDd8MHwxfHNlYXJjaHwxfHxwdW5qYWJpJTIwZm9vZCUyMGRoYWJhfGVufDB8fHx8MTc1MjIzMDcyMnww<!-- Image will be inserted here -->ixlib=rb-4.1.0<!-- Image will be inserted here -->q=85"
+          alt="Authentic Punjabi Food"
+        />
+      </section>
+      <section class="about-us">
+        <h2>About Us</h2>
+        <p>
+          Punjabi Dhaba brings you the most authentic and delicious Punjabi
+          food, prepared with love and traditional recipes. Come and savor the
+          rich flavors of North India!
+        </p>
+      </section>
+      <section class="menu-preview">
+        <h2>Our Specialties</h2>
+        <ul>
+          <li>Butter Chicken</li>
+          <li>Sarson Da Saag & Makki Di Roti</li>
+          <li>Dal Makhani</li>
+          <li>Amritsari Kulcha</li>
+          <li>Lassi</li>
+        </ul>
+      </section>
+      <section class="order-form">
+        <h2>Order Your Favorite Dishes! 🌶️</h2>
+        <form id="dishOrderForm">
+          <div class="form-group">
+            <label for="dish">Select a Dish:</label>
+            <select id="dish" name="dish" required>
+              <option value="">-- Please choose an option --</option>
+              <option value="Butter Chicken">Butter Chicken</option>
+              <option value="Sarson Da Saag & Makki Di Roti">
+                Sarson Da Saag & Makki Di Roti
+              </option>
+              <option value="Dal Makhani">Dal Makhani</option>
+              <option value="Amritsari Kulcha">Amritsari Kulcha</option>
+              <option value="Lassi">Lassi</option>
+              <option value="Paneer Tikka">Paneer Tikka</option>
+              <option value="Chicken Tikka">Chicken Tikka</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="quantity">Quantity:</label>
+            <input
+              type="number"
+              id="quantity"
+              name="quantity"
+              min="1"
+              value="1"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              pattern="[0-9]{10}"
+              placeholder="e.g., 1234567890"
+              required
+            />
+            <small>Format: 10 digits (no spaces or hyphens)</small>
+          </div>
+          <div class="form-group">
+            <label for="address">Delivery Address:</label>
+            <textarea id="address" name="address" rows="3" required></textarea>
+          </div>
+          <button type="submit">Place Order</button>
+        </form>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2023 Punjabi Dhaba. All rights reserved.</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
