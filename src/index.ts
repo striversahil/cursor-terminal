@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai"
 import { config } from "dotenv"
 import readline from "readline-sync"
+import chalk from "chalk"
 import { exec } from "child_process"
 import { platform } from "os"
 // Load environment variables from .env file
@@ -71,34 +72,22 @@ If operating system is Linux or MacOS, you can use the following shell commands:
     EOF
 
 `
-const History: { role: string, parts: ({ text: string } | { functionCall: any } | { functionResponse : any})[] }[] = []
-        
-        
-const welcomeMessage = `
-Welcome to the GenAI Terminal Agent! 🤖👋
+const History: { role: string, parts: ({ text: string } | { functionCall: any } | { functionResponse: any })[] }[] = []
 
-Ask me anything about building websites, and I will create a visually appealing website using modern UI/UX principles. 🌐✨
-Type your query below and I will respond with the necessary commands to execute in your terminal.
-Type "exit" or "quit" to end the conversation.
+// Function to execute shell commands
 
-Let's build something amazing together! 🚀✨
-.....................................................................................................................................................................................
-        `
-        
-        // Function to execute shell commands
-        
 const executeCommand = ({ command }: { command: string }): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(`Error: ${error.message}`)
-      } else if (stderr) {
-        reject(`Stderr: ${stderr}`)
+    return new Promise((resolve, reject) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(`Error: ${error.message}`)
+            } else if (stderr) {
+                reject(`Stderr: ${stderr}`)
       } else {
         resolve(`Success: ${stdout}`)
-      }
-    })
-  })
+    }
+})
+})
 }
 
 const ExecuteCommandDescription = {
@@ -174,7 +163,7 @@ const AvailableTools : Record<string , any> = {
 
 const runAgent = async () => {
     try {
-        console.log("\n Agent is thinking... 🤔\n")
+        log(chalk.bold.blue("\nAgent is thinking... 🤔\n"))
         const response = await genai.models.generateContent({
             model: modelName,
             contents: History,
@@ -183,16 +172,16 @@ const runAgent = async () => {
                 tools: [{ functionDeclarations: [ExecuteCommandDescription as any , UnsplashImageDescription as any] }],
             }
         });
-
+        
         if (response.functionCalls && response.functionCalls.length > 0) {
             const functionCall = response.functionCalls[0]
-            console.log("AI Agent 🤖 is calling a tool...🔧 :\n", functionCall)
+            console.log(chalk.bold.cyan("AI Agent 🤖 is calling a tool...🔧 :\n"), functionCall)
             const tool = functionCall.name ? AvailableTools[functionCall.name] : undefined
             if (tool) {
-
+                
                 // Getting the result of the tool function call with arguments
                 const result = await tool(functionCall.args)
-
+                
                 const toolResult = {
                     name: functionCall.name,
                     response: {
@@ -205,7 +194,7 @@ const runAgent = async () => {
                     role: "model",
                     parts: [{ functionCall: response.functionCalls[0] }]
                 })
-
+                
                 // Push the tool result to the history
                 History.push({
                     role: "user",
@@ -220,20 +209,35 @@ const runAgent = async () => {
         }
     } catch (error) {
         console.error("Error sending message to Google GenAI:", error)
-
+        
         return "Error occurred while processing your request."
     }
 }
 
+const log = console.log 
+        
+const welcomeMessage = `
+    Ask me anything about building websites, and I will create a visually appealing website using modern UI/UX principles. 🌐✨
+    Type your query below and I will respond with the necessary commands to execute in your terminal.
+    Type "exit" or "quit" to end the conversation.
+        `
 
 
 //                      +++++++++++++++++++++++++++++++++++++++++++++++  Main Program Execution +++++++++++++++++++++++++++++++++++++++++++++++
 console.clear()
-console.log(welcomeMessage)
+log(chalk.green.bold("\nWelcome to the GenAI Terminal Agent! 🤖👋"))
+log(chalk.white(welcomeMessage))
+log(chalk.rgb(255, 165, 0).underline("Let's build something amazing together! 🚀✨"))
+log(".....................................................................................................................................................................................")
 
 async function main() {
-
+    
     const message = readline.question(">>>  ").trim()
+
+    if (!message) {
+        console.log("Please enter a valid query or command.")
+        return main() // Call main again to continue the conversation
+    }
     if (message.toLocaleLowerCase() === "exit" || message.toLocaleLowerCase() === "quit") {
         console.log(`Thank you for using the Google GenAI Terminal Agent! Goodbye! 👋`)
         // sleep for 500 milliseconds before exiting
@@ -256,7 +260,7 @@ async function main() {
             role: "model",
             parts: [{ text: response! }]
         })
-        console.log("[Agent] : ", response)
+        console.log(chalk.bold.cyan("[Agent] : \n"), response)
         console.log("\n") // Add some space for better readability
 
         main() // Call main again to continue the conversation
