@@ -105,7 +105,7 @@ const ExecuteCommandDescription = {
     }
 }
 
-
+// Function to use Unsplash API to fetch an image based on a query
 
 const unsplashImage = async ({ query }: { query: string }) => {
     try {
