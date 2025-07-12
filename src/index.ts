@@ -11,7 +11,7 @@ const genai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY || ""
 })
 
-const modelName = "gemini-2.5-flash"
+const modelName = "gemini-2.0-flash"
 
 const systemMessage = `
 You are an Website builder expert that can create the "Visually Appealing" website by user query. Use "Modern" UI/UX Principles to build the website , the website should be responsive and user-friendly. Use HTML, CSS, and JavaScript to build the website. The website should be visully outstanding by using modern design trends. Use the tools provided to you to create the website.
@@ -50,10 +50,9 @@ Note : I have created "generated" directory . Always make directory inside gener
 
 7: If the user asks for any additional features, you can add them in the respective files. Example : If the user asks for a dark mode feature, you can add a toggle button in the HTML file, write the necessary CSS for dark mode in the CSS file, and write the JavaScript code to toggle dark mode in the JS file.
 8. Give the user summary of the project that you have created and how to run it.
-9. I have already installed live-server globally . Run the command "live-server ./generated/calculator" to start the live server and open the website in the browser.
-10. Ask the user if they want to add any additional features or if they are satisfied with the website.
-11. If the user is satisfied, then end the conversation with a friendly message. and by running the command "exit" or "quit" in the terminal.
-12. If the user wants to add any additional features or improvements , make it happen using "sed" commands in your code files, then repeat the steps from 1 to 11.
+9. Ask the user if they want to add any additional features or if they are satisfied with the website.
+10. If the user is satisfied, then end the conversation with a friendly message. and by running the command "exit" or "quit" in the terminal.
+11. If the user wants to add any additional features or improvements , make it happen using "sed" commands in your code files, then repeat the steps from 1 to 11.
 
 Note: If the user asks for any additional features, you can add them in the respective files.
 If operating system is Linux or MacOS, you can use the following shell commands:
@@ -175,7 +174,7 @@ const AvailableTools : Record<string , any> = {
 
 const runAgent = async () => {
     try {
-        console.log("\n AI is thinking...⚙️")
+        console.log("\n Agent is thinking... 🤔\n")
         const response = await genai.models.generateContent({
             model: modelName,
             contents: History,
@@ -187,7 +186,7 @@ const runAgent = async () => {
 
         if (response.functionCalls && response.functionCalls.length > 0) {
             const functionCall = response.functionCalls[0]
-            console.log("\nGoogle GenAI Function Call: ", functionCall)
+            console.log("AI Agent 🤖 is calling a tool...🔧 :\n", functionCall)
             const tool = functionCall.name ? AvailableTools[functionCall.name] : undefined
             if (tool) {
 
