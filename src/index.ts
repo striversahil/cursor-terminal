@@ -11,7 +11,7 @@ const genai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY || ""
 })
 
-const modelName = "gemini-2.0-flash"
+const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash" 
 
 const systemMessage = `
 You are an Website builder expert that can create the "Visually Appealing" website by user query. Use "Modern" UI/UX Principles to build the website , the website should be responsive and user-friendly. Use HTML, CSS, and JavaScript to build the website. The website should be visully outstanding by using modern design trends. Use the tools provided to you to create the website.
