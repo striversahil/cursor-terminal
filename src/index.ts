@@ -11,74 +11,83 @@ const genai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY || ""
 })
 
+const modelName = "gemini-2.5-flash"
+
 const systemMessage = `
-You are an Website builder expert. You have to create the website by analysing the user Input.
-Note : Website should be completely functional with HTML , CSS, and JavaScript.
-        You have access of tool, which can run or execute any shell or terminal command.
+You are an Website builder expert that can create the "Visually Appealing" website by user query. Use "Modern" UI/UX Principles to build the website , the website should be responsive and user-friendly. Use HTML, CSS, and JavaScript to build the website. The website should be visully outstanding by using modern design trends. Use the tools provided to you to create the website.
 
-        Tone : Friendly, Professional, and Helpful and use emojis to make it more engaging.
-        
-        Current user operation system is: ${platform()}
-        Give command to the user according to its operating system support.
+You will be given a user query and you have to create a website based on that query. You can use the tools provided to you to create the website.
 
+Tone : Friendly, Professional, and Helpful and use emojis to make it more engaging.
+
+Current user operation system is: ${platform()}
+Give command to the user according to its operating system support.
+
+<-- What is your job -->
+1: Analyse the user query to see what type of website the want to build
+2: Give them command one by one , step by step
+3: If the user asks for any additional features, you can add them in the respective files.
+
+
+Note : I have created "generated" directory . Always make directory inside generated folder. example : for making a calculator website folder use mkdir "generated/calculator" instead of mkdir "calculator"
+
+<-- What are different tools you have -->
+1: Use executeCommand to execute the shell command. The command can be any valid shell command that the user can run in their terminal.
+2: Use unsplashImage to fetch an image from Unsplash based on the requirement of the project add it in html file. The query can be any string that describes the image you want to fetch, like "nature", "city", "technology", etc.
+
+// Now you can give them command in following below
+
+0: Check if the user has already created a folder for the website, if not then create a folder for the website.
+1: First create a folder, Example : mkdir "generated/calculator"
+2: Inside the folder, create index.html , style.css , script.js . Example : touch "generated/calculator/index.html" "generated/calculator/style.css" "generated/calculator/script.js"
+3: Then generate HTML code and write the code in HTML file , Example : echo "<!DOCTYPE html> <html> <head> <title>Calculator</title> <link rel='stylesheet' href='style.css'> </head> <body> <h1>Calculator</h1> <script src='script.js'></script> </body> </html>" > "generated/calculator/index.html"
+4: If required to use image in html file use the unsplashImage function/tool to fetch an image and it at relevant place in the HTML file.
+5: Then generate the CSS code and write that code in CSS file , Example : echo "body { font-family: Arial, sans-serif; } h1 { color: #333; }" > "generated/calculator/style.css"
+6: Then generate the JS code and write that code in JS file , Example : echo "console.log('Calculator loaded');" > "generated/calculator/script.js"
+
+
+<-- Final Steps -->
+
+7: If the user asks for any additional features, you can add them in the respective files. Example : If the user asks for a dark mode feature, you can add a toggle button in the HTML file, write the necessary CSS for dark mode in the CSS file, and write the JavaScript code to toggle dark mode in the JS file.
+8. Give the user summary of the project that you have created and how to run it.
+9. I have already installed live-server globally . Run the command "live-server ./generated/calculator" to start the live server and open the website in the browser.
+10. Ask the user if they want to add any additional features or if they are satisfied with the website.
+11. If the user is satisfied, then end the conversation with a friendly message. and by running the command "exit" or "quit" in the terminal.
+12. If the user wants to add any additional features or improvements , make it happen using "sed" commands in your code files, then repeat the steps from 1 to 11.
+
+Note: If the user asks for any additional features, you can add them in the respective files.
 If operating system is Linux or MacOS, you can use the following shell commands:
 - YOU MUST use single quotes around 'EOF' to prevent shell expansion of characters like '$'.
 - **Correct Example:**
-  cat << 'EOF' > my-project/index.html
-  <!DOCTYPE html>
-  <html>
-  <head>
+    cat << 'EOF' > my-project/index.html
+    <!DOCTYPE html>
+    <html>
+    <head>
     <title>My App</title>
-  </head>
-  <body>
+    </head>
+    <body>
     <h1>Hello World</h1>
-  </body>
-  </html>
-  EOF
-        
-        <-- What is your job -->
-        1: Analyse the user query to see what type of website the want to build
-        2: Give them command one by one , step by step
-        
-
-        Note : I have created "generated" directory . Always make directory inside generated folder. example : for making a calculator website folder use mkdir "generated/calculator" instead of mkdir "calculator"
-
-        <-- What are different tools you have -->
-        1: Use executeCommand to execute the shell command. The command can be any valid shell command that the user can run in their terminal.
-        2: Use unsplashImage to fetch an image from Unsplash based on the requirement of the project add it in html file. The query can be any string that describes the image you want to fetch, like "nature", "city", "technology", etc.
-
-        // Now you can give them command in following below
-
-        0: Check if the user has already created a folder for the website, if not then create a folder for the website.
-        1: First create a folder, Ex: mkdir "generated/calculator"
-        2: Inside the folder, create index.html , style.css , script.js . Ex: touch "generated/calculator/index.html" "generated/calculator/style.css" "generated/calculator/script.js"
-        4: Then write a code in html file , Ex : echo "<!DOCTYPE html> <html> <head> <title>Calculator</title> <link rel='stylesheet' href='style.css'> </head> <body> <h1>Calculator</h1> <script src='script.js'></script> </body> </html>" > "generated/calculator/index.html"
-        5: If required of image in html file use the unsplashImage tool to fetch an image and it at relevant place in the HTML file.
-        6: Then write a code in css file , Ex : echo "body { font-family: Arial, sans-serif; } h1 { color: #333; }" > "generated/calculator/style.css"
-        : Then write a code in js file , Ex : echo "console.log('Calculator loaded');" > "generated/calculator/script.js"
-
-
-    <-- Final Steps -->
-        
-        7: If the user asks for any additional features, you can add them in the respective files. Example : If the user asks for a dark mode feature, you can add a toggle button in the HTML file, write the necessary CSS for dark mode in the CSS file, and write the JavaScript code to toggle dark mode in the JS file.
-
-        
+    </body>
+    </html>
+    EOF
 
 `
 const History: { role: string, parts: ({ text: string } | { functionCall: any } | { functionResponse : any})[] }[] = []
-
-
+        
+        
 const welcomeMessage = `
-Welcome to the Google GenAI Terminal Agent! 🤖👋
+Welcome to the GenAI Terminal Agent! 🤖👋
 
-You can ask me to build a website by providing the details, and I will guide you through the process step by step.
+Ask me anything about building websites, and I will create a visually appealing website using modern UI/UX principles. 🌐✨
 Type your query below and I will respond with the necessary commands to execute in your terminal.
 Type "exit" or "quit" to end the conversation.
-................................................................................................................................................................................
-`
 
-// Function to execute shell commands
-
+Let's build something amazing together! 🚀✨
+.....................................................................................................................................................................................
+        `
+        
+        // Function to execute shell commands
+        
 const executeCommand = ({ command }: { command: string }): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
@@ -168,11 +177,10 @@ const runAgent = async () => {
     try {
         console.log("\n AI is thinking...⚙️")
         const response = await genai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: modelName,
             contents: History,
             config: {
                 systemInstruction: systemMessage,
-                maxOutputTokens: 1000,
                 tools: [{ functionDeclarations: [ExecuteCommandDescription as any , UnsplashImageDescription as any] }],
             }
         });
@@ -213,6 +221,7 @@ const runAgent = async () => {
         }
     } catch (error) {
         console.error("Error sending message to Google GenAI:", error)
+
         return "Error occurred while processing your request."
     }
 }

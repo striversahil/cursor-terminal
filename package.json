@@ -14,7 +14,9 @@
     "@google/genai": "^1.9.0",
     "dotenv": "^17.2.0",
     "readline-sync": "^1.4.10",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "live-server": "^1.2.1"
+
   },
   "devDependencies": {
     "@types/node": "^24.0.13",
