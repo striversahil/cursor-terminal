@@ -1,0 +1,193 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #050505;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+header {
+    background-color: #fff;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    color: #1877f2;
+    margin: 0;
+    font-size: 2rem;
+}
+
+.search-bar input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    width: 200px;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: #1877f2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(24, 119, 242, 0.3);
+}
+
+main {
+    display: flex;
+    padding: 20px 0;
+}
+
+.left-sidebar {
+    width: 20%;
+}
+
+.left-sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.left-sidebar nav ul li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #555;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.left-sidebar nav ul li a:hover {
+    background-color: #e4e6eb;
+    color: #1877f2;
+}
+
+/* Example icons - you might want to use actual icon fonts or images */
+.left-sidebar nav ul li a:before {
+    content: '\25BA '; /* Right-pointing arrow */
+    margin-right: 5px;
+}
+
+.main-content {
+    width: 50%;
+    padding: 0 20px;
+}
+
+.post {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.post h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.post textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    resize: none;
+    font-size: 1rem;
+}
+
+.post button {
+    background-color: #1877f2;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.post button:hover {
+    background-color: #0d6efd;
+}
+
+.right-sidebar {
+    width: 30%;
+    padding: 0 20px;
+}
+
+.right-sidebar h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.trending-list {
+    list-style: none;
+    padding: 0;
+}
+
+.trending-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.trending-list li:last-child {
+    border-bottom: none;
+}
+
+footer {
+    background-color: #fff;
+    padding: 15px 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    main {
+        flex-direction: column;
+    }
+
+    .left-sidebar, .main-content, .right-sidebar {
+        width: 100%;
+        padding: 0;
+    }
+
+    .search-bar {
+        margin-top: 10px;
+        width: 100%;
+    }
+}
+
+/* Profile picture styling */
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}

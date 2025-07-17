@@ -34,7 +34,7 @@ Note : I have created "generated" directory . Always make directory inside gener
 
 <-- What are different tools you have -->
 1: Use executeCommand to execute the shell command. The command can be any valid shell command that the user can run in their terminal.
-2: Use unsplashImage to fetch an image from Unsplash based on the requirement of the project add it in html file. The query can be any string that describes the image you want to fetch, like "nature", "city", "technology", etc.
+2: Use Image tool to fetch an image based on the requirement of the project add it in html file. The query can be any string that describes the image you want to fetch, like "nature", "city", "technology", etc.
 
 // Now you can give them command in following below
 
@@ -42,7 +42,7 @@ Note : I have created "generated" directory . Always make directory inside gener
 1: First create a folder, Example : mkdir "generated/calculator"
 2: Inside the folder, create index.html , style.css , script.js . Example : touch "generated/calculator/index.html" "generated/calculator/style.css" "generated/calculator/script.js"
 3: Then generate HTML code and write the code in HTML file , Example : echo "<!DOCTYPE html> <html> <head> <title>Calculator</title> <link rel='stylesheet' href='style.css'> </head> <body> <h1>Calculator</h1> <script src='script.js'></script> </body> </html>" > "generated/calculator/index.html"
-4: If required to use image in html file use the unsplashImage function/tool to fetch an image and it at relevant place in the HTML file.
+4: If required to use image in html file use the Image function/tool to fetch an image and it at relevant place in the HTML file.
 5: Then generate the CSS code and write that code in CSS file , Example : echo "body { font-family: Arial, sans-serif; } h1 { color: #333; }" > "generated/calculator/style.css"
 6: Then generate the JS code and write that code in JS file , Example : echo "console.log('Calculator loaded');" > "generated/calculator/script.js"
 
@@ -107,7 +107,7 @@ const ExecuteCommandDescription = {
 
 // Function to use Unsplash API to fetch an image based on a query
 
-const unsplashImage = async ({ query }: { query: string }) => {
+const Imageservice = async ({ query }: { query: string }) => {
     try {
         const response = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}`, {
             headers: {
@@ -137,9 +137,9 @@ const unsplashImage = async ({ query }: { query: string }) => {
 }
 
 
-const UnsplashImageDescription = {
-    name: "unsplashImage",
-    description: "Fetches an image from Unsplash based on the provided query.",
+const ImageDescription = {
+    name: "Image",
+    description: "Fetches an image from Image service based on the provided query.",
     parameters: {
         type: "OBJECT",
         properties: {
@@ -155,7 +155,7 @@ const UnsplashImageDescription = {
 
 const AvailableTools : Record<string , any> = {
     "executeCommand": executeCommand,
-    "unsplashImage": unsplashImage
+    "Image": Imageservice
 }
 
 
@@ -169,7 +169,7 @@ const runAgent = async () => {
             contents: History,
             config: {
                 systemInstruction: systemMessage,
-                tools: [{ functionDeclarations: [ExecuteCommandDescription as any , UnsplashImageDescription as any] }],
+                tools: [{ functionDeclarations: [ExecuteCommandDescription as any , ImageDescription as any] }],
             }
         });
         
@@ -208,7 +208,7 @@ const runAgent = async () => {
             return responseText // Return the text response
         }
     } catch (error) {
-        console.error("Error sending message to Google GenAI:", error)
+        console.error("Error sending message to Google GenAI:\n", error)
         
         return "Error occurred while processing your request."
     }
